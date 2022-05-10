@@ -1,0 +1,27 @@
+{
+    "person": [
+        {
+            "firstName": "John",
+            "lastName": "Doe",
+            "age": 25
+        },
+        {
+            "firstName": "Max",
+            "lastName": "Mustermann",
+            "age": 30,
+            "test": "hell"
+        }
+    ],
+    "address": [
+        {
+            "street": "Hauptstraße",
+            "cityCode": 8421,
+            "city": "Augsburg"
+        },
+        {
+            "street": "Unter den Linden",
+            "cityCode": 1,
+            "city": "Berlin"
+        }
+    ]
+}
