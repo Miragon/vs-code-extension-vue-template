@@ -1,6 +1,6 @@
-./out
-./dist
-./dist-vue
+out
+dist
+dist-vue
 **/node_modules
 .vscode-test/
 *.vsix
