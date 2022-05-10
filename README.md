@@ -234,7 +234,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [issues-shield]: https://img.shields.io/github/issues/peterhnm/vscode-extension-vue-template.svg?style=for-the-badge
 [issues-url]: https://github.com/peterhnm/vscode-extension-vue-template/issues
 [license-shield]: https://img.shields.io/github/license/peterhnm/vscode-extension-vue-template.svg?style=for-the-badge
-[license-url]: https://github.com/peterhnm/vscode-extension-vue-template/LICENSE.txt
+[license-url]: https://github.com/peterhnm/vscode-extension-vue-template/blob/main/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://de.linkedin.com/company/miragon-io
 [product-screenshot]: images/screenshot.png
