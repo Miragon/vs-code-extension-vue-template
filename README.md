@@ -29,8 +29,11 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/peterhnm/vscode-extension-vue-template">
-    <img src="images/logo.png" alt="Miragon" width="80" height="80">
+  <a href="https://code.visualstudio.com/api">
+    <img src="images/visual-studio-code-icons/vscode.svg" alt="VSCode" width="80" height="80">
+  </a>
+  <a href="https://v2.vuejs.org/">
+    <img src="https://avatars.githubusercontent.com/u/6128107?s=200&v=4" alt="VueJS" width="80" height="80">
   </a>
 
 <h3 align="center">VSCode Extension with VueJS</h3>
