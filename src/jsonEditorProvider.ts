@@ -76,9 +76,6 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
                 case 'vuejsoneditor.edit':
                     this.setChangesToDocument(document, e.content);
                     return;
-                case 'vuejsoneditor.jsonError':
-                    vscode.window.showErrorMessage('Content is not valid json');
-                    return;
             }
         });
 
@@ -164,6 +161,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         try {
             return JSON.parse(text);
         } catch {
+            vscode.window.showErrorMessage('No valid json');
             throw new Error('Could not get document as json. Content is not valid json');
         }
     }
