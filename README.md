@@ -30,7 +30,7 @@
 <br />
 <div align="center">
   <a href="https://code.visualstudio.com/api">
-    <img src="images/visual-studio-code-icons/vscode.svg" alt="VSCode" width="80" height="80">
+    <img src="images/vscode.svg" alt="VSCode" width="80" height="80">
   </a>
   <a href="https://v2.vuejs.org/">
     <img src="https://avatars.githubusercontent.com/u/6128107?s=200&v=4" alt="VueJS" width="80" height="80">
