@@ -1,7 +1,7 @@
 <template>
    <div>
       <h1>My Json-Editor</h1>
-      <textarea id="editor" ref="textEditor" @keydown.tab.prevent="enableTab"
+      <textarea id="editor" ref="textEditor" @keydown.tab.prevent="enableTab" @keydown.enter="preventSendData"
                 @input.prevent="sendData"></textarea>
    </div>
 </template>
@@ -13,19 +13,46 @@ import {VsCode} from "@/types/VSCodeApi";
 export default defineComponent({
    name: "JsonEditor",
    setup() {
-      const textEditor: Ref<HTMLTextAreaElement | null> = ref(null);
-      const cursorPosition = ref(0);
-
       const vscode = inject('vscode') as VsCode;
+      const textEditor: Ref<HTMLTextAreaElement | null> = ref(null);
 
-      function enableTab() {
-         const start = textEditor.value?.selectionStart ?? 0;
-         const end = textEditor.value?.selectionEnd ?? 0;
+      let cursorPosition = 0;
+      let numOfTabs = 0;
+      let isEnter = false;
 
-         textEditor.value!.value = textEditor.value?.value.substring(0, start) +
-             "\t" + textEditor.value?.value.substring(end);
+      onMounted(() => {
+         window.addEventListener('message', getData);
+      })
 
-         textEditor.value!.selectionStart = textEditor.value!.selectionEnd = start + 1;
+      onUnmounted(() => {
+         window.removeEventListener('message', getData);
+      })
+
+      function enableTab(): void {
+         const el = textEditor.value
+         const start = el?.selectionStart ?? 0;
+         const end = el?.selectionEnd ?? 0;
+
+         el!.value = el?.value.substring(0, start) + '\t' + el?.value.substring(end);
+         el!.selectionStart = el!.selectionEnd = start + 1;
+
+         numOfTabs += 1;
+      }
+
+      function preventSendData(): void {
+         isEnter = true;
+         numOfTabs = 0;
+      }
+
+      function saveCursorPosition(): void {
+         if (numOfTabs > 0) {
+            cursorPosition = textEditor.value!.selectionStart + (4 * (numOfTabs - 1)) + 1;
+         }
+         else {
+            cursorPosition = textEditor.value!.selectionStart;
+         }
+
+         numOfTabs = 0;
       }
 
       function isStringJson(str: string): boolean {
@@ -47,26 +74,19 @@ export default defineComponent({
          }
       }
 
-      function sendData() {
-         cursorPosition.value = textEditor.value!.selectionEnd;
-         if (isStringJson(textEditor.value!.value)) {
+      function sendData(): void {
+         if (!isEnter && isStringJson(textEditor.value!.value)) {
+            saveCursorPosition();
             vscode.postMessage({type: 'vuejsoneditor.edit', content: textEditor.value?.value});
          }
+
+         isEnter = false;
       }
 
       function updateContent(text: string): void {
-         let json;
-         try {
-            if (!text) {
-               text = '{}';
-            }
-            json = JSON.parse(text);
-            textEditor.value!.value = JSON.stringify(json, undefined, 4);
-            textEditor.value?.focus();
-            console.log('updateContent()', cursorPosition.value);
-            textEditor.value!.selectionEnd = cursorPosition.value + 4;
-         } catch {
-            console.error('No valid json.');
+         if (textEditor.value) {
+            textEditor.value.value = text;
+            textEditor.value.selectionStart = textEditor.value.selectionEnd = cursorPosition;
          }
       }
 
@@ -75,18 +95,10 @@ export default defineComponent({
          updateContent(state.text);
       }
 
-      onMounted(() => {
-         window.addEventListener('message', getData);
-      })
-
-      onUnmounted(() => {
-         window.removeEventListener('message', getData);
-      })
-
       return {
          textEditor,
-         //data,
          enableTab,
+         preventSendData,
          sendData
       }
    },
@@ -100,15 +112,6 @@ div {
    height: 1000px;
    font-family: sans-serif;
    font-size: 18px;
-}
-
-.errorContainer {
-   width: 100%;
-   height: 30px;
-   border-radius: 4px;
-   border: 2px solid indianred;
-   color: indianred;
-   text-align: center;
 }
 
 #editor {
