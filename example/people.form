@@ -9,11 +9,7 @@
             "firstName": "Max",
             "lastName": "Mustermann",
             "age": 30
-        },
-        {
-            "firstName": "Dana"
-        },
-        {}
+        }
     ],
     "address": [
         {
