@@ -91,7 +91,9 @@
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
 This example shows how to use the Custom Editor API to build your own editor for `VSCode` with `VueJS`.
+
 <img src="./images/Extension.png" style="margin: 20px;transform: rotate(90deg);">
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
