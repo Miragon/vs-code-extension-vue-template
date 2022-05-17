@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getNonce } from './utils';
+import {getNonce} from './utils';
 
 /**
  * Provider for a simple JSON-Editor
@@ -18,8 +18,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
      */
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
         const provider = new JsonEditorProvider(context);
-        const providerRegistration = vscode.window.registerCustomEditorProvider(JsonEditorProvider.viewType, provider);
-        return providerRegistration;
+        return vscode.window.registerCustomEditorProvider(JsonEditorProvider.viewType, provider);
     }
 
     constructor(
@@ -50,17 +49,33 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
         // Send the content from the extension to the webview
-        function updateWebview() {
-            webviewPanel.webview.postMessage({
-                type: 'vuejsoneditor.update',
-                text: document.getText(),
-            });
+        function updateWebview(reason: vscode.TextDocumentChangeReason | undefined) {
+            switch (reason) {
+                case 1: {
+                    // Undo
+                    webviewPanel.webview.postMessage({
+                        type: 'vuejsoneditor.undo',
+                        operation: reason,
+                        text: document.getText(),
+                    });
+                    break;
+                }
+                case 2: {
+                    // Redo
+                    webviewPanel.webview.postMessage({
+                        type: 'vuejsoneditor.redo',
+                        operation: reason,
+                        text: document.getText(),
+                    });
+                    break;
+                }
+            }
         }
 
         // Event that is emitted when the text document is changed
         const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
             if (e.document.uri.toString() === document.uri.toString()) {
-                updateWebview();
+                updateWebview(e.reason);
             }
         });
 
@@ -80,7 +95,11 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         });
 
         // initial call
-        updateWebview();
+        console.log('Update');
+        webviewPanel.webview.postMessage({
+            type: 'vuejsoneditor.update',
+            text: document.getText(),
+        });
     }
 
     /**
@@ -99,10 +118,6 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
 
         const styleAppUri = webview.asWebviewUri(vscode.Uri.joinPath(
             this.context.extensionUri, 'dist-vue', 'css/app.css'
-        ));
-
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-            this.context.extensionUri, 'media', 'script.js'
         ));
 
         const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(
