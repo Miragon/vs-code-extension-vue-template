@@ -1,8 +1,10 @@
 <template>
    <div>
       <h1>My Json-Editor</h1>
-      <textarea id="editor" ref="textEditor" @keydown.tab.prevent="enableTab" @keydown.enter="preventSendData"
-                @input.prevent="sendData"></textarea>
+      <textarea id="editor" ref="textEditor"
+                @keydown.tab.prevent="enableTab"
+                @input.prevent="sendData">
+      </textarea>
    </div>
 </template>
 
@@ -17,10 +19,13 @@ export default defineComponent({
       const textEditor: Ref<HTMLTextAreaElement | null> = ref(null);
 
       let cursorPosition = 0;
-      let numOfTabs = 0;
-      let isEnter = false;
+      let textLength = 0;
 
       onMounted(() => {
+         const state = vscode.getState();
+         if (state) {
+            updateContent(state.text);
+         }
          window.addEventListener('message', getData);
       })
 
@@ -28,6 +33,9 @@ export default defineComponent({
          window.removeEventListener('message', getData);
       })
 
+      /**
+       * Enable tabs inside a textarea, so it will not lose focus.
+       */
       function enableTab(): void {
          const el = textEditor.value
          const start = el?.selectionStart ?? 0;
@@ -35,26 +43,12 @@ export default defineComponent({
 
          el!.value = el?.value.substring(0, start) + '\t' + el?.value.substring(end);
          el!.selectionStart = el!.selectionEnd = start + 1;
-
-         numOfTabs += 1;
       }
 
-      function preventSendData(): void {
-         isEnter = true;
-         numOfTabs = 0;
-      }
-
-      function saveCursorPosition(): void {
-         if (numOfTabs > 0) {
-            cursorPosition = textEditor.value!.selectionStart + (4 * (numOfTabs - 1)) + 1;
-         }
-         else {
-            cursorPosition = textEditor.value!.selectionStart;
-         }
-
-         numOfTabs = 0;
-      }
-
+      /**
+       * Small helper function to check if a string is valid json.
+       * @param str String which is checked.
+       */
       function isStringJson(str: string): boolean {
          try {
             JSON.parse(str);
@@ -64,41 +58,66 @@ export default defineComponent({
          return true;
       }
 
+      /**
+       * Receive and process the content of the message.
+       * @param event Message which contain the data.
+       */
       function getData(event: MessageEvent): void {
-         switch (event.data.type) {
+         const message = event.data;
+         const text = message.text;
+
+         switch (message.type) {
             case 'vuejsoneditor.update': {
-               const text: string = event.data.text;
                updateContent(text);
-               vscode.setState({text});
+               break;
+            }
+            case 'vuejsoneditor.undo': {
+               updateContent(text, true);
+               break;
+            }
+            case 'vuejsoneditor.redo': {
+               updateContent(text, true);
+               break;
+            }
+            default: break;
+         }
+      }
+
+      /**
+       * Send data back to the extension.
+       */
+      function sendData(): void {
+         if (isStringJson(textEditor.value!.value)) {
+            cursorPosition = textEditor.value!.selectionEnd; // save current cursor position
+            textLength = textEditor.value!.value.length; // save the current text length
+            vscode.postMessage({type: 'vuejsoneditor.edit', content: textEditor.value?.value});
+            vscode.setState({text: textEditor.value?.value});
+         }
+      }
+
+      /**
+       * Update the value of the textarea.
+       * @param text: New value.
+       * @param isSetCursorPos On undo and redo the position of the cursor have to benn set.
+       */
+      function updateContent(text: string, isSetCursorPos = false): void {
+         vscode.setState({text});
+
+         if (textEditor.value) {
+            // Because we set a new value for the textarea the cursor would be set to the end of the text.
+            // So we have to set the cursor position to the values we saved before sending the data back
+            // to the extension.
+            textEditor.value!.value = text;
+            if (isSetCursorPos) {
+               let diffLength = text.length - textLength;
+               textEditor.value!.selectionStart = textEditor.value!.selectionEnd = cursorPosition + diffLength;
             }
          }
-      }
-
-      function sendData(): void {
-         if (!isEnter && isStringJson(textEditor.value!.value)) {
-            saveCursorPosition();
-            vscode.postMessage({type: 'vuejsoneditor.edit', content: textEditor.value?.value});
-         }
-
-         isEnter = false;
-      }
-
-      function updateContent(text: string): void {
-         if (textEditor.value) {
-            textEditor.value.value = text;
-            textEditor.value.selectionStart = textEditor.value.selectionEnd = cursorPosition;
-         }
-      }
-
-      const state = vscode.getState();
-      if (state) {
-         updateContent(state.text);
       }
 
       return {
          textEditor,
          enableTab,
-         preventSendData,
          sendData
       }
    },
