@@ -92,7 +92,7 @@
 
 This example shows how to use the Custom Editor API to build your own editor for `VSCode` with `VueJS`.
 
-<img src="./images/Extension.png">
+<img src="./images/Extension.png" width="80">
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
