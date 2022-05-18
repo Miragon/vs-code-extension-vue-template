@@ -146,8 +146,8 @@ To get a local copy up and running follow these steps.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-In Visual Studio Code use `F5` to compile and run the extension in a new *Extension Development Host* window.
-You can open the example folder to test the extension and do some read and write operations.
+In Visual Studio Code use `F5` to compile and run the example in a new *Extension Development Host* window.
+You can open the example folder to test the extension.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

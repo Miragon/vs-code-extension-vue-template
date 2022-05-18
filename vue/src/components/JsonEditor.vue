@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, onMounted, onUnmounted, Ref, ref} from "@vue/composition-api";
+import {defineComponent, inject, Ref, ref} from "@vue/composition-api";
 import {VsCode} from "@/types/VSCodeApi";
 
 export default defineComponent({
@@ -20,18 +20,6 @@ export default defineComponent({
 
       let cursorPosition = 0;
       let textLength = 0;
-
-      onMounted(() => {
-         const state = vscode.getState();
-         if (state) {
-            updateContent(state.text);
-         }
-         window.addEventListener('message', getData);
-      })
-
-      onUnmounted(() => {
-         window.removeEventListener('message', getData);
-      })
 
       /**
        * Enable tabs inside a textarea, so it will not lose focus.
@@ -59,44 +47,20 @@ export default defineComponent({
       }
 
       /**
-       * Receive and process the content of the message.
-       * @param event Message which contain the data.
-       */
-      function getData(event: MessageEvent): void {
-         const message = event.data;
-         const text = message.text;
-
-         switch (message.type) {
-            case 'vuejsoneditor.update': {
-               updateContent(text);
-               break;
-            }
-            case 'vuejsoneditor.undo': {
-               updateContent(text, true);
-               break;
-            }
-            case 'vuejsoneditor.redo': {
-               updateContent(text, true);
-               break;
-            }
-            default: break;
-         }
-      }
-
-      /**
        * Send data back to the extension.
        */
       function sendData(): void {
          if (isStringJson(textEditor.value!.value)) {
             cursorPosition = textEditor.value!.selectionEnd; // save current cursor position
             textLength = textEditor.value!.value.length; // save the current text length
+
             vscode.postMessage({type: 'vuejsoneditor.edit', content: textEditor.value?.value});
             vscode.setState({text: textEditor.value?.value});
          }
       }
 
       /**
-       * Update the value of the textarea.
+       * Update the hole text inside the textarea.
        * @param text: New value.
        * @param isSetCursorPos On undo and redo the position of the cursor have to benn set.
        */
@@ -105,8 +69,7 @@ export default defineComponent({
 
          if (textEditor.value) {
             // Because we set a new value for the textarea the cursor would be set to the end of the text.
-            // So we have to set the cursor position to the values we saved before sending the data back
-            // to the extension.
+            // So we have to set the cursor position to the values we saved before sending the data to the extension.
             textEditor.value!.value = text;
             if (isSetCursorPos) {
                let diffLength = text.length - textLength;
@@ -117,6 +80,7 @@ export default defineComponent({
 
       return {
          textEditor,
+         updateContent,    // Make the function executable from the Parent-Component
          enableTab,
          sendData
       }
