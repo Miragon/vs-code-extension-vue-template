@@ -5,6 +5,7 @@
                 @keydown.tab.prevent="enableTab"
                 @input.prevent="sendData">
       </textarea>
+      <div id="error_container" v-if="!isJson">No valid JSON</div>
    </div>
 </template>
 
@@ -17,6 +18,7 @@ export default defineComponent({
    setup() {
       const vscode = inject('vscode') as VsCode;
       const textEditor: Ref<HTMLTextAreaElement | null> = ref(null);
+      const isJson = ref(true);
 
       let cursorPosition = 0;
       let textLength = 0;
@@ -41,8 +43,10 @@ export default defineComponent({
          try {
             JSON.parse(str);
          } catch {
+            isJson.value = false;
             return false;
          }
+         isJson.value = true;
          return true;
       }
 
@@ -80,6 +84,7 @@ export default defineComponent({
 
       return {
          textEditor,
+         isJson,
          updateContent,    // Make the function executable from the Parent-Component
          enableTab,
          sendData
@@ -90,20 +95,34 @@ export default defineComponent({
 
 <style scoped>
 div {
-   margin: 0;
-   width: 100%;
-   height: 1000px;
    font-family: sans-serif;
    font-size: 18px;
+   height: 1000px;
+   margin: 0;
+   width: 100%;
 }
 
 #editor {
-   width: 100%;
+   cursor: text;
+   font-family: sans-serif;
+   font-size: 16px;
    height: 100%;
    overflow: hidden;
    tab-size: 4;
-   font-family: sans-serif;
-   font-size: 16px;
-   cursor: text;
+   width: 100%;
+}
+
+#error_container {
+   border: solid 2px red;
+   border-radius: 8px;
+   bottom: 100px;
+   color: red;
+   height: 40px;
+   line-height: 36px;
+   position: absolute;
+   right: 10px;
+   text-align: center;
+   vertical-align: middle;
+   width: 400px;
 }
 </style>

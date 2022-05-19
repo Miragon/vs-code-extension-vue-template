@@ -94,12 +94,13 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
             }
         });
 
-        // initial call
-        console.log('Update');
+        // Initial message wich sends the data to the webview
         webviewPanel.webview.postMessage({
             type: 'vuejsoneditor.update',
             text: document.getText(),
         });
+
+        console.log(vscode.window.activeColorTheme);
     }
 
     /**
@@ -124,10 +125,6 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
             this.context.extensionUri, 'media', 'reset.css'
         ));
 
-        const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(
-            this.context.extensionUri, 'media', 'reset.css'
-        ));
-
         const nonce = getNonce();
 
         return `
@@ -144,7 +141,6 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
                 <link href="${styleResetUri}" rel="stylesheet" />
-                <link href="${styleMainUri}" rel="stylesheet" />
                 <link href="${styleAppUri}" rel="stylesheet" />
 
                 <title>Json Editor</title>
