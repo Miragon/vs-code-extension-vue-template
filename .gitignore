@@ -6,5 +6,4 @@ dist-vue
 *.vsix
 
 **/.idea
-**/.vscode
 **/.DS_Store

@@ -128,14 +128,21 @@ To get a local copy up and running follow these steps.
 1. Clone the repo
    ```sh
    git clone https://github.com/peterhnm/vscode-extension-vue-template.git
-   cd vscode-example-custom-editor
+   cd vscode-extension-vue-template
    ```
 2. Install NPM packages
    ```sh
    npm install
    ```
-3. Open the project in vs code
+3. Build Vue-App
    ```sh
+   cd vue
+   npm install
+   npm run build
+   ```
+5. Open the project in vs code
+   ```sh
+   cd ..
    code .
    ```
 
