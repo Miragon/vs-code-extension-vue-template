@@ -26,7 +26,7 @@ export default defineComponent({
          const text = message.text;
 
          switch (message.type) {
-            case 'vuejsoneditor.update': {
+            case 'vuejsoneditor.updateFromExtension': {
                jsonEditor.value?.updateContent(text);
                break;
             }

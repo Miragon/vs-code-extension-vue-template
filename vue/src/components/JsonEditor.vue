@@ -12,6 +12,7 @@
 <script lang="ts">
 import {defineComponent, inject, Ref, ref} from "@vue/composition-api";
 import {VsCode} from "@/types/VSCodeApi";
+import {isStringJson} from "@/composables/utils";
 
 export default defineComponent({
    name: "JsonEditor",
@@ -35,31 +36,27 @@ export default defineComponent({
          el!.selectionStart = el!.selectionEnd = start + 1;
       }
 
-      /**
-       * Small helper function to check if a string is valid json.
-       * @param str String which is checked.
-       */
-      function isStringJson(str: string): boolean {
-         try {
-            JSON.parse(str);
-         } catch {
-            isJson.value = false;
-            return false;
+      /*
+      function keydownEvent(event: KeyboardEvent) {
+         if (event.key === '{') {
+
          }
-         isJson.value = true;
-         return true;
       }
+       */
 
       /**
        * Send data back to the extension.
        */
       function sendData(): void {
-         if (isStringJson(textEditor.value!.value)) {
-            cursorPosition = textEditor.value!.selectionEnd; // save current cursor position
-            textLength = textEditor.value!.value.length; // save the current text length
+         if (textEditor.value) {
+            isJson.value = isStringJson(textEditor.value.value);
 
-            vscode.postMessage({type: 'vuejsoneditor.edit', content: textEditor.value?.value});
-            vscode.setState({text: textEditor.value?.value});
+            if (isJson.value) {
+               cursorPosition = textEditor.value.selectionEnd; // save current cursor position
+               textLength = textEditor.value.value.length; // save the current text length
+               vscode.postMessage({type: 'vuejsoneditor.updateFromWebview', content: textEditor.value.value});
+               vscode.setState({text: textEditor.value.value});
+            }
          }
       }
 

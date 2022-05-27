@@ -13,13 +13,13 @@
     ],
     "address": [
         {
-            "street": "Hauptstraße",
-            "cityCode": 8421,
+            "street": "Provinzstraße 52",
+            "cityCode": 86153,
             "city": "Augsburg"
         },
         {
             "street": "Unter den Linden",
-            "cityCode": 1,
+            "cityCode": 10117,
             "city": "Berlin"
         }
     ]

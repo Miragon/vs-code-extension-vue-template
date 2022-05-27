@@ -25,7 +25,17 @@
 				],
 				"priority": "default"
 			}
-		]
+		],
+		"configuration": {
+			"title": "JsonEditor",
+			"properties": {
+				"jsonEditor.openStandardEditor": {
+					"type": "boolean",
+					"default": true,
+					"description": "Open the standard VsCode Text Editor besides the custom editor."
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
