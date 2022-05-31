@@ -7,4 +7,4 @@ dist-vue
 
 **/.idea
 **/.DS_Store
-./images/*.mp4
+/images/*.mp4
