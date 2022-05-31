@@ -3,17 +3,13 @@ import {getNonce} from './utils';
 
 /**
  * Provider for a simple JSON-Editor
- * 
  * This editor will open on '.form'-Files in VS-Code.
- * 
  */
 export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
 
     private static readonly viewType = 'vuejsoneditor.jsonEditor';
     private readonly customConfigs = vscode.workspace.getConfiguration('jsonEditor');
-    private isConfigStdEditor: boolean | undefined;
-    private isUpdateFromWebview = false;
-    private isBuffer = false;
+    private isValidJson = true;
 
     /**
      * Register the CustomTextEditorProvider
@@ -25,9 +21,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         return vscode.window.registerCustomEditorProvider(JsonEditorProvider.viewType, provider);
     }
 
-    constructor(private readonly context: vscode.ExtensionContext) {
-        this.isConfigStdEditor = this.customConfigs.get('openStandardEditor');
-    }
+    constructor(private readonly context: vscode.ExtensionContext) { }
 
     /**
      * Called when the custom editor is opened.
@@ -40,6 +34,11 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         webviewPanel: vscode.WebviewPanel,
         token: vscode.CancellationToken
     ): Promise<void> {
+
+        let isBuffer = false;
+        let isConfigStdEditor = this.customConfigs.get('openStandardEditor');
+        let isUpdateFromWebview = false;
+        let jsonErrorMsg: vscode.Disposable;
 
         // Setup initial content for the webview
         webviewPanel.webview.options = {
@@ -62,14 +61,14 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
 
         // Handle changes to the custom configurations
         vscode.workspace.onDidChangeConfiguration(() => {
-            this.isConfigStdEditor = vscode.workspace.getConfiguration('jsonEditor').get('openStandardEditor');
+            isConfigStdEditor = this.customConfigs.get('openStandardEditor');
         });
 
         /**
          * When changes are made inside the webview a message to the extension will be sent with the new data.
          * This will also change the model (= document). If the model is changed the onDidChangeTextDocument event
          * will trigger and the SAME data would be sent back to the webview.
-         * To prevent this we check from where the changes come from (webview or somewhere else).
+         * To prevent this we check from where the changes came from (webview or somewhere else).
          * If the changes are made inside the webview (this.isUpdateFromWebview === true) then we will send NO data
          * to the webview. For example if the changes are made inside a separate editor then the data will be sent to
          * the webview to synchronize it with the current content of the model.
@@ -77,11 +76,14 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
             if (e.document.uri.toString() === document.uri.toString() && e.contentChanges.length !== 0) {
 
+                // If the webview is in the background then no messages can be sent to it.
+                // So we have to remember that we need to update its content the next time the webview regain its focus.
                 if (!webviewPanel.visible) {
-                    this.isBuffer = true;
+                    isBuffer = true;
                     return;
                 }
 
+                // Update the webviews content.
                 switch (e.reason) {
                     case 1: {
                         updateWebview('vuejsoneditor.undo');
@@ -92,10 +94,11 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
                         break;
                     }
                     case undefined: {
-                        if (!this.isUpdateFromWebview) {
+                        // If the initial update came from the webview then we don't need to update the webview.
+                        if (!isUpdateFromWebview) {
                             updateWebview('vuejsoneditor.updateFromExtension');
                         }
-                        this.isUpdateFromWebview = false;
+                        isUpdateFromWebview = false;
                         break;
                     }
                 }
@@ -103,14 +106,14 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         });
 
         webviewPanel.onDidChangeViewState(() => {
-            // If changes has been made while the webview was not active no messages could have been sent to the webview.
-            // So we have to update the webview if it gets its focus back.
-            if (webviewPanel.visible && this.isBuffer) {
+            // If changes has been made while the webview was not visible no messages could have been sent to the
+            // webview. So we have to update the webview if it gets its focus back.
+            if (webviewPanel.visible && isBuffer) {
                 webviewPanel.webview.postMessage({
                     type: 'vuejsoneditor.updateFromExtension',
                     text: document.getText(),
                 });
-                this.isBuffer = false;
+                isBuffer = false;
             }
         });
 
@@ -118,6 +121,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         webviewPanel.onDidDispose(() => {
             changeDocumentSubscription.dispose();
 
+            // Close also every standard text editor with the same document.
             vscode.window.visibleTextEditors.forEach((editor) => {
                 if (editor.document.fileName === document.fileName) {
                     vscode.window.showTextDocument(
@@ -137,15 +141,28 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         // Receive message from the webview
         webviewPanel.webview.onDidReceiveMessage(e => {
             switch (e.type) {
-                case 'vuejsoneditor.updateFromWebview':
+                case 'vuejsoneditor.updateFromWebview': {
+                    isUpdateFromWebview = true;
                     this.setChangesToDocument(document, e.content);
-                    return;
+                    if (!this.isValidJson) {
+                        jsonErrorMsg.dispose();
+                        this.isValidJson = true;
+                    }
+                    break;
+                }
+                case 'vuejsoneditor.noValidJson': {
+                    if (this.isValidJson) {
+                        jsonErrorMsg = vscode.window.setStatusBarMessage('No valid JSON!');
+                        this.isValidJson = false;
+                    }
+                    break;
+                }
             }
         });
 
         vscode.window.onDidChangeVisibleTextEditors(() => {
             const editors = vscode.window.visibleTextEditors;
-            // Make sure that max. only one editor for the document is open
+            // Make sure that maximal only one editor for the document is open
             if (editors.length > 1) {
                 editors.forEach((editor) => {
                     if (editor.document.fileName === document.fileName) {
@@ -170,7 +187,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         });
 
         // Opens the default vscode text-editor besides our own custom text-editor
-        if (this.isConfigStdEditor) {
+        if (isConfigStdEditor) {
             if (vscode.window.visibleTextEditors.length === 0) {
                 vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, true);
             }
@@ -246,7 +263,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         try {
             return JSON.parse(text);
         } catch {
-            vscode.window.showErrorMessage('No valid json');
+            this.isValidJson = false;
             throw new Error('Could not get document as json. Content is not valid json');
         }
     }
@@ -266,8 +283,6 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
             new vscode.Range(0, 0, document.lineCount, 0),
             text
         );
-
-        this.isUpdateFromWebview = true;
 
         return vscode.workspace.applyEdit(edit);
     }

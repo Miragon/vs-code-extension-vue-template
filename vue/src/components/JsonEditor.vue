@@ -5,7 +5,6 @@
                 @keydown.tab.prevent="enableTab"
                 @input.prevent="sendData">
       </textarea>
-      <div id="error_container" v-if="!isJson">No valid JSON</div>
    </div>
 </template>
 
@@ -19,7 +18,6 @@ export default defineComponent({
    setup() {
       const vscode = inject('vscode') as VsCode;
       const textEditor: Ref<HTMLTextAreaElement | null> = ref(null);
-      const isJson = ref(true);
 
       let cursorPosition = 0;
       let textLength = 0;
@@ -36,26 +34,26 @@ export default defineComponent({
          el!.selectionStart = el!.selectionEnd = start + 1;
       }
 
-      /*
-      function keydownEvent(event: KeyboardEvent) {
-         if (event.key === '{') {
-
-         }
-      }
-       */
-
       /**
        * Send data back to the extension.
        */
       function sendData(): void {
          if (textEditor.value) {
-            isJson.value = isStringJson(textEditor.value.value);
-
-            if (isJson.value) {
+            if (isStringJson(textEditor.value.value)) {
                cursorPosition = textEditor.value.selectionEnd; // save current cursor position
-               textLength = textEditor.value.value.length; // save the current text length
-               vscode.postMessage({type: 'vuejsoneditor.updateFromWebview', content: textEditor.value.value});
+               textLength = textEditor.value.value.length;     // save the current text length
+
                vscode.setState({text: textEditor.value.value});
+               vscode.postMessage({
+                  type: 'vuejsoneditor.updateFromWebview',
+                  content: textEditor.value.value
+               });
+            }
+            else {
+               vscode.postMessage({
+                  type: 'vuejsoneditor.noValidJson',
+                  content: false
+               });
             }
          }
       }
@@ -81,7 +79,6 @@ export default defineComponent({
 
       return {
          textEditor,
-         isJson,
          updateContent,    // Make the function executable from the Parent-Component
          enableTab,
          sendData
@@ -107,19 +104,5 @@ div {
    overflow: hidden;
    tab-size: 4;
    width: 100%;
-}
-
-#error_container {
-   border: solid 2px red;
-   border-radius: 8px;
-   bottom: 100px;
-   color: red;
-   height: 40px;
-   line-height: 36px;
-   position: absolute;
-   right: 10px;
-   text-align: center;
-   vertical-align: middle;
-   width: 400px;
 }
 </style>
