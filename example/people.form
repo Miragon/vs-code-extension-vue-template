@@ -9,6 +9,11 @@
             "firstName": "Max",
             "lastName": "Mustermann",
             "age": 30
+        },
+        {
+            "firstName": "John",
+            "lastName": "Smith",
+            "age": 45
         }
     ],
     "address": [

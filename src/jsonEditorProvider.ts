@@ -8,7 +8,6 @@ import {getNonce} from './utils';
 export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
 
     private static readonly viewType = 'vuejsoneditor.jsonEditor';
-    private readonly customConfigs = vscode.workspace.getConfiguration('jsonEditor');
     private isValidJson = true;
 
     /**
@@ -21,7 +20,9 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         return vscode.window.registerCustomEditorProvider(JsonEditorProvider.viewType, provider);
     }
 
-    constructor(private readonly context: vscode.ExtensionContext) { }
+    constructor(
+        private readonly context: vscode.ExtensionContext,
+    ) { }
 
     /**
      * Called when the custom editor is opened.
@@ -36,7 +37,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
     ): Promise<void> {
 
         let isBuffer = false;
-        let isConfigStdEditor = this.customConfigs.get('openStandardEditor');
+        let isConfigStdEditor = vscode.workspace.getConfiguration('jsonEditor').get('openStandardEditor');
         let isUpdateFromWebview = false;
         let jsonErrorMsg: vscode.Disposable;
 
@@ -61,7 +62,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
 
         // Handle changes to the custom configurations
         vscode.workspace.onDidChangeConfiguration(() => {
-            isConfigStdEditor = this.customConfigs.get('openStandardEditor');
+            isConfigStdEditor = vscode.workspace.getConfiguration('jsonEditor').get('openStandardEditor');
         });
 
         /**
