@@ -93,6 +93,12 @@
 This example shows how to use the Custom Editor API to build your own editor for `VSCode` with `VueJS`.
 
 
+<<<<<<< HEAD
+=======
+https://user-images.githubusercontent.com/100686712/171188808-37954d6c-7734-48a2-8fcf-339f8918c608.mp4
+
+
+>>>>>>> 5ce81448024d26344e330d7524429134d0171a53
 <img src="./images/Extension.png" width="600">
 
 <p align="right">(<a href="#top">back to top</a>)</p>
