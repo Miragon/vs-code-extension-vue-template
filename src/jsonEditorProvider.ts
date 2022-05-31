@@ -86,17 +86,17 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
                 // Update the webviews content.
                 switch (e.reason) {
                     case 1: {
-                        updateWebview('vuejsoneditor.undo');
+                        updateWebview(JsonEditorProvider.viewType + '.undo');
                         break;
                     }
                     case 2: {
-                        updateWebview('vuejsoneditor.redo');
+                        updateWebview(JsonEditorProvider.viewType + '.redo');
                         break;
                     }
                     case undefined: {
                         // If the initial update came from the webview then we don't need to update the webview.
                         if (!isUpdateFromWebview) {
-                            updateWebview('vuejsoneditor.updateFromExtension');
+                            updateWebview(JsonEditorProvider.viewType + '.updateFromExtension');
                         }
                         isUpdateFromWebview = false;
                         break;
@@ -110,7 +110,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
             // webview. So we have to update the webview if it gets its focus back.
             if (webviewPanel.visible && isBuffer) {
                 webviewPanel.webview.postMessage({
-                    type: 'vuejsoneditor.updateFromExtension',
+                    type: JsonEditorProvider.viewType + '.updateFromExtension',
                     text: document.getText(),
                 });
                 isBuffer = false;
@@ -141,7 +141,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
         // Receive message from the webview
         webviewPanel.webview.onDidReceiveMessage(e => {
             switch (e.type) {
-                case 'vuejsoneditor.updateFromWebview': {
+                case JsonEditorProvider.viewType + '.updateFromWebview': {
                     isUpdateFromWebview = true;
                     this.setChangesToDocument(document, e.content);
                     if (!this.isValidJson) {
@@ -150,7 +150,7 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
                     }
                     break;
                 }
-                case 'vuejsoneditor.noValidJson': {
+                case JsonEditorProvider.viewType + '.noValidJson': {
                     if (this.isValidJson) {
                         jsonErrorMsg = vscode.window.setStatusBarMessage('No valid JSON!');
                         this.isValidJson = false;
@@ -182,7 +182,8 @@ export class JsonEditorProvider implements vscode.CustomTextEditorProvider {
 
         // Initial message which sends the data to the webview
         webviewPanel.webview.postMessage({
-            type: 'vuejsoneditor.updateFromExtension',
+            type: 'initial.updateFromExtension',
+            viewType: JsonEditorProvider.viewType,
             text: document.getText(),
         });
 

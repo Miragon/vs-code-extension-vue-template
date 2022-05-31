@@ -1,6 +1,6 @@
 <template>
    <div id="app">
-      <json-editor ref="jsonEditor"></json-editor>
+      <json-editor ref="jsonEditor" :viewType="viewType"></json-editor>
    </div>
 </template>
 
@@ -16,6 +16,7 @@ export default defineComponent({
    components: {JsonEditor},
    setup() {
       const jsonEditor = ref<InstanceType<typeof JsonEditor>>()
+      const viewType = ref('');
 
       /**
        * Receive and process the content of the message.
@@ -26,12 +27,17 @@ export default defineComponent({
          const text = message.text;
 
          switch (message.type) {
-            case 'vuejsoneditor.updateFromExtension': {
+            case 'initial.updateFromExtension': {
+               viewType.value = message.viewType;
                jsonEditor.value?.updateContent(text);
                break;
             }
-            case 'vuejsoneditor.undo':
-            case 'vuejsoneditor.redo': {
+            case viewType.value + '.updateFromExtension': {
+               jsonEditor.value?.updateContent(text);
+               break;
+            }
+            case viewType.value + '.undo':
+            case viewType.value + '.redo': {
                jsonEditor.value?.updateContent(text, true);
                break;
             }
@@ -43,7 +49,8 @@ export default defineComponent({
          // Restore the state after the extension get the focus back
          const state = vscode.getState();
          if (state) {
-            jsonEditor.value?.updateContent(state.text)
+            viewType.value = state.viewType;
+            jsonEditor.value?.updateContent(state.text);
          }
 
          // Add event listener for receiving messages from the extension
@@ -58,7 +65,8 @@ export default defineComponent({
       provide('vscode', vscode);
 
       return {
-         jsonEditor
+         jsonEditor,
+         viewType
       }
    }
 });

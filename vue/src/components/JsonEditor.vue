@@ -15,7 +15,8 @@ import {isStringJson} from "@/composables/utils";
 
 export default defineComponent({
    name: "JsonEditor",
-   setup() {
+   props: ['viewType'],
+   setup(props) {
       const vscode = inject('vscode') as VsCode;
       const textEditor: Ref<HTMLTextAreaElement | null> = ref(null);
 
@@ -43,15 +44,19 @@ export default defineComponent({
                cursorPosition = textEditor.value.selectionEnd; // save current cursor position
                textLength = textEditor.value.value.length;     // save the current text length
 
-               vscode.setState({text: textEditor.value.value});
+               vscode.setState({
+                  viewType: props.viewType,
+                  text: textEditor.value.value
+               });
+
                vscode.postMessage({
-                  type: 'vuejsoneditor.updateFromWebview',
+                  type: props.viewType + '.updateFromWebview',
                   content: textEditor.value.value
                });
             }
             else {
                vscode.postMessage({
-                  type: 'vuejsoneditor.noValidJson',
+                  type: props.viewType + '.noValidJson',
                   content: false
                });
             }
@@ -64,7 +69,10 @@ export default defineComponent({
        * @param isSetCursorPos On undo and redo the position of the cursor have to benn set.
        */
       function updateContent(text: string, isSetCursorPos = false): void {
-         vscode.setState({text});
+         vscode.setState({
+            viewType: props.viewType,
+            text: text
+         });
 
          if (textEditor.value) {
             // Because we set a new value for the textarea the cursor would be set to the end of the text.
