@@ -90,7 +90,7 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-This example shows how to use the Custom Editor API to build your own editor for `VSCode` with `VueJS`.
+This example shows how to use the `VSCode API` to build your own text editor with `VueJS`.
 
 https://user-images.githubusercontent.com/100686712/171188808-37954d6c-7734-48a2-8fcf-339f8918c608.mp4
 
