@@ -129,11 +129,11 @@ To get a local copy up and running follow these steps.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/peterhnm/vscode-extension-vue-template.git
-   cd vscode-extension-vue-template
+   git clone https://github.com/FlowSquad/vscode-extension-vue-template.git
    ```
 2. Install NPM packages
    ```sh
+   cd vscode-extension-vue-template
    npm install
    ```
 3. Build Vue-App
@@ -179,7 +179,6 @@ See the [open issues](https://github.com/github_username/repo_name/issues) for a
 
 
 <!-- CONTRIBUTING -->
-<!--
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -194,7 +193,6 @@ Don't forget to give the project a star! Thanks again!
 5. Open a Pull Request
 
 <p align="right">(<a href="#top">back to top</a>)</p>
--->
 
 
 
