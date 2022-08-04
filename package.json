@@ -39,11 +39,19 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
+		"compile": "tsc -p tsconfig-extension.json",
+		"watch": "tsc -watch -p tsconfig-extension.json",
 		"pretest": "npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"ext-lint": "eslint ext-src --ext ts",
+		"test": "node ./out/test/runTest.js",
+		"serve": "vue-cli-service serve",
+		"build": "vue-cli-service build",
+		"lint": "vue-cli-service lint"
+	},
+	"dependencies": {
+		"@vue/composition-api": "^1.6.1",
+		"core-js": "^3.8.3",
+		"vue": "^2.6.14"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.66.0",
@@ -56,6 +64,13 @@
 		"glob": "^7.2.0",
 		"mocha": "^9.2.2",
 		"typescript": "^4.5.5",
-		"@vscode/test-electron": "^2.1.3"
+		"@vscode/test-electron": "^2.1.3",
+		"@vue/cli-plugin-babel": "~5.0.0",
+		"@vue/cli-plugin-eslint": "~5.0.0",
+		"@vue/cli-plugin-typescript": "~5.0.0",
+		"@vue/cli-service": "~5.0.0",
+		"@vue/eslint-config-typescript": "^9.1.0",
+		"eslint-plugin-vue": "^8.0.3",
+		"vue-template-compiler": "2.6.14"
 	}
 }

@@ -8,3 +8,6 @@ dist-vue
 **/.idea
 **/.DS_Store
 /images/*.mp4
+
+src/**/*.js
+src/**/*.js.map
