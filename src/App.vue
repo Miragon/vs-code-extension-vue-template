@@ -5,9 +5,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, onUnmounted, provide, ref} from "@vue/composition-api";
-import {VsCode} from "@/types/VSCodeApi";
-import JsonEditor from "@/components/JsonEditor.vue";
+import {defineComponent, onMounted, onUnmounted, provide, ref} from "vue";
+import {VsCode} from "src/types/VSCodeApi";
+import JsonEditor from "./components/JsonEditor.vue";
 
 declare const vscode: VsCode;
 
@@ -22,16 +22,11 @@ export default defineComponent({
        * Receive and process the content of the message.
        * @param event Message which was sent from the extension.
        */
-      function getData(event: MessageEvent): void {
+      function getDataFromExtension(event: MessageEvent): void {
          const message = event.data;
-         const text = message.text;
+         const text: JSON = message.text;
 
          switch (message.type) {
-            case 'initial.updateFromExtension': {
-               viewType.value = message.viewType;
-               jsonEditor.value?.updateContent(text);
-               break;
-            }
             case viewType.value + '.updateFromExtension': {
                jsonEditor.value?.updateContent(text);
                break;
@@ -46,19 +41,18 @@ export default defineComponent({
       }
 
       onMounted(() => {
-         // Restore the state after the extension get the focus back
          const state = vscode.getState();
          if (state) {
             viewType.value = state.viewType;
-            jsonEditor.value?.updateContent(state.text);
+            jsonEditor.value?.updateContent(JSON.parse(state.text));
          }
 
          // Add event listener for receiving messages from the extension
-         window.addEventListener('message', getData);
+         window.addEventListener('message', getDataFromExtension);
       })
 
       onUnmounted(() => {
-         window.removeEventListener('message', getData);
+         window.removeEventListener('message', getDataFromExtension);
       })
 
       // Publish the VSCodeAPI to all components

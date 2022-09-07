@@ -1,76 +1,73 @@
 {
-  "name": "vuejsoneditor",
-	"displayName": "vuejsoneditor",
-	"description": "",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.66.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-        "onCustomEditor:vuejsoneditor.jsonEditor"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"customEditors": [
-			{
-				"viewType": "vuejsoneditor.jsonEditor",
-				"displayName": "Json Editor",
-				"selector": [
-					{
-						"filenamePattern": "*.form"
-					}
-				],
-				"priority": "default"
-			}
-		],
-		"configuration": {
-			"title": "JsonEditor",
-			"properties": {
-				"jsonEditor.openStandardEditor": {
-					"type": "boolean",
-					"default": true,
-					"description": "Open the standard VsCode Text Editor besides the custom editor."
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p tsconfig-extension.json",
-		"watch": "tsc -watch -p tsconfig-extension.json",
-		"pretest": "npm run compile && npm run lint",
-		"ext-lint": "eslint src-ext --ext ts",
-		"test": "node ./out/test/runTest.js",
-		"serve": "vue-cli-service serve",
-		"build": "vue-cli-service build",
-		"lint": "vue-cli-service lint"
-	},
-	"dependencies": {
-		"@vue/composition-api": "^1.6.1",
-		"core-js": "^3.8.3",
-		"vue": "^2.6.14"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.66.0",
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^9.1.0",
-		"@types/node": "14.x",
-		"@typescript-eslint/eslint-plugin": "^5.16.0",
-		"@typescript-eslint/parser": "^5.16.0",
-		"eslint": "^8.11.0",
-		"glob": "^7.2.0",
-		"mocha": "^9.2.2",
-		"typescript": "^4.5.5",
-		"@vscode/test-electron": "^2.1.3",
-		"@vue/cli-plugin-babel": "~5.0.0",
-		"@vue/cli-plugin-eslint": "~5.0.0",
-		"@vue/cli-plugin-typescript": "~5.0.0",
-		"@vue/cli-service": "~5.0.0",
-		"@vue/eslint-config-typescript": "^9.1.0",
-		"eslint-plugin-vue": "^8.0.3",
-		"vue-template-compiler": "2.6.14"
-	}
+  "name": "vs-code-extension-vue-template",
+  "displayName": "Template",
+  "description": "Template for extensions build with vue.js",
+  "license": "Apache License 2.0",
+  "version": "0.1.0",
+  "publisher": "miragon-gmbh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FlowSquad/vs-code-extension-vue-template.git"
+  },
+  "bugs": "https://github.com/FlowSquad/vs-code-extension-vue-template/issues",
+  "engines": {
+    "vscode": "^1.69.0"
+  },
+  "icon": "images/vscode.svg",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCustomEditor:vuejsoneditor.jsonEditor"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "id": "vuejsoneditor",
+        "viewType": "vuejsoneditor.jsonEditor",
+        "displayName": "Json Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.form"
+          }
+        ],
+        "priority": "default"
+      }
+    ]
+  },
+  "scripts": {
+    "publish": "vsce publish",
+    "vscode:prepublish": "npm run build",
+    "build": "tsup src-ext/extension.ts --dts --external=vscode && vite build --config ./src/vite.config.js",
+    "dev-client": "vite build --config ./src/vite.config.js --watch",
+    "watch": "tsup src-ext/extension.ts --dts --external=vscode --sourcemap",
+    "test": "node ./out/test/runTest.js"
+  },
+  "dependencies": {
+    "core-js": "^3.8.3",
+    "vue": "^2.7.7"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.69.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "@vscode/test-electron": "^2.1.3",
+    "@vue/eslint-config-typescript": "^9.1.0",
+    "deepmerge": "^4.2.2",
+    "eslint": "^8.22.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "glob": "^7.2.0",
+    "mocha": "^9.2.2",
+    "path": "^0.12.7",
+    "tsup": "^6.2.2",
+    "typescript": "^4.5.5",
+    "vite": "^3.0.8",
+    "vite-plugin-vue2": "^2.0.2",
+    "vue-template-compiler": "^2.6.14"
+  }
 }

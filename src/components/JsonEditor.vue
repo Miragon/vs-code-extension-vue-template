@@ -9,9 +9,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, Ref, ref} from "@vue/composition-api";
-import {VsCode} from "@/types/VSCodeApi";
-import {isStringJson} from "@/composables/utils";
+import {defineComponent, inject, Ref, ref} from "vue";
+import {VsCode} from "src/types/VSCodeApi";
 
 export default defineComponent({
    name: "JsonEditor",
@@ -40,26 +39,18 @@ export default defineComponent({
        */
       function sendData(): void {
          if (textEditor.value) {
-            if (isStringJson(textEditor.value.value)) {
-               cursorPosition = textEditor.value.selectionEnd; // save current cursor position
-               textLength = textEditor.value.value.length;     // save the current text length
+             cursorPosition = textEditor.value.selectionEnd; // save current cursor position
+             textLength = textEditor.value.value.length;     // save the current text length
 
-               vscode.setState({
-                  viewType: props.viewType,
-                  text: textEditor.value.value
-               });
+             vscode.setState({
+                viewType: props.viewType,
+                text: textEditor.value.value
+             });
 
-               vscode.postMessage({
-                  type: props.viewType + '.updateFromWebview',
-                  content: textEditor.value.value
-               });
-            }
-            else {
-               vscode.postMessage({
-                  type: props.viewType + '.noValidJson',
-                  content: false
-               });
-            }
+             vscode.postMessage({
+                type: props.viewType + '.updateFromWebview',
+                content: JSON.parse(textEditor.value.value)
+             });
          }
       }
 
@@ -68,19 +59,19 @@ export default defineComponent({
        * @param text: New value.
        * @param isSetCursorPos On undo and redo the position of the cursor have to benn set.
        */
-      function updateContent(text: string, isSetCursorPos = false): void {
+      function updateContent(text: JSON, isSetCursorPos = false): void {
          vscode.setState({
             viewType: props.viewType,
-            text: text
+            text: JSON.stringify(text)
          });
 
          if (textEditor.value) {
             // Because we set a new value for the textarea the cursor would be set to the end of the text.
             // So we have to set the cursor position to the values we saved before sending the data to the extension.
-            textEditor.value!.value = text;
+            textEditor.value.value = JSON.stringify(text, undefined, 4);
             if (isSetCursorPos) {
-               let diffLength = text.length - textLength;
-               textEditor.value!.selectionStart = textEditor.value!.selectionEnd = cursorPosition + diffLength;
+               let diffLength = textEditor.value.value.length - textLength;
+               textEditor.value.selectionStart = textEditor.value.selectionEnd = cursorPosition + diffLength;
             }
          }
       }
@@ -109,7 +100,6 @@ div {
    font-family: sans-serif;
    font-size: 16px;
    height: 100%;
-   overflow: hidden;
    tab-size: 4;
    width: 100%;
 }

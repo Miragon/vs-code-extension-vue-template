@@ -92,8 +92,6 @@
 
 This example shows how to use the `VSCode API` to build your own text editor with `VueJS`.
 
-https://user-images.githubusercontent.com/100686712/171188808-37954d6c-7734-48a2-8fcf-339f8918c608.mp4
-
 <!--
 <img src="./images/Extension.png" width="600">
 -->
@@ -201,7 +199,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
