@@ -102,7 +102,7 @@ This example shows how to use the `VSCode API` to build your own text editor wit
 
 ### Built With
 
-* [VSCode](https://code.visualstudio.com/api)
+* [VsCode API](https://code.visualstudio.com/api)
 * [Vue 2](https://v2.vuejs.org/)
   * [TypeScript](https://www.typescriptlang.org/)
   * [Composition API](https://vuejs.org/guide/typescript/composition-api.html#typescript-with-composition-api)
