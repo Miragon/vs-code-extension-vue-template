@@ -39,7 +39,7 @@
 <h3 align="center">VSCode Extension with VueJS</h3>
 
   <p align="center">
-    A template for using VueJS in a vscode extension.
+    A template for a vscode extension using vue.js
     <br />
     <!--
     <a href="https://github.com/peterhnm/vscode-extension-vue-template"><strong>Explore the docs »</strong></a>
@@ -92,8 +92,6 @@
 
 This example shows how to use the `VSCode API` to build your own text editor with `VueJS`.
 
-https://user-images.githubusercontent.com/100686712/171188808-37954d6c-7734-48a2-8fcf-339f8918c608.mp4
-
 <!--
 <img src="./images/Extension.png" width="600">
 -->
@@ -104,7 +102,7 @@ https://user-images.githubusercontent.com/100686712/171188808-37954d6c-7734-48a2
 
 ### Built With
 
-* [VSCode](https://code.visualstudio.com/api)
+* [VsCode API](https://code.visualstudio.com/api)
 * [Vue 2](https://v2.vuejs.org/)
   * [TypeScript](https://www.typescriptlang.org/)
   * [Composition API](https://vuejs.org/guide/typescript/composition-api.html#typescript-with-composition-api)
@@ -140,13 +138,10 @@ To get a local copy up and running follow these steps.
    ```
 3. Build Vue-App
    ```sh
-   cd vue
-   npm install
    npm run build
    ```
 5. Open the project in vs code
    ```sh
-   cd ..
    code .
    ```
 
@@ -201,7 +196,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
