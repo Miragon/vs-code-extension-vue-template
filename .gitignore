@@ -1,7 +1,6 @@
-out
-dist
+**/dist/**
 **/node_modules/**
-.vscode-test/
+**/.idea/**
+**/.DS_Store/**
 
-**/.idea
-**/.DS_Store
+package-lock.json
