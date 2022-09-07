@@ -138,13 +138,10 @@ To get a local copy up and running follow these steps.
    ```
 3. Build Vue-App
    ```sh
-   cd vue
-   npm install
    npm run build
    ```
 5. Open the project in vs code
    ```sh
-   cd ..
    code .
    ```
 
