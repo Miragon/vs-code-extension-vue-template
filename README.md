@@ -39,7 +39,7 @@
 <h3 align="center">VSCode Extension with VueJS</h3>
 
   <p align="center">
-    A template for using VueJS in a vscode extension.
+    A template for a vscode extension using vue.js
     <br />
     <!--
     <a href="https://github.com/peterhnm/vscode-extension-vue-template"><strong>Explore the docs »</strong></a>
